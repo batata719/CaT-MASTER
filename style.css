@@ -1,18 +1,18 @@
 :root {
-    --bg-color: #1c1c1e;
-    --panel-color: #2c2c2e;
-    --accent-color: #ff9f1c;
+    --bg-color: #201a1e; /* Fundo levemente arroxeado escuro */
+    --panel-color: #332b30;
+    --accent-color: #ffcc00; /* Amarelo Gato */
     --text-color: #ffffff;
-    --btn-bg: #3a3a3c;
+    --btn-bg: #4a3b45;
     --green: #4cd964;
-    --red: #ff3b30;
+    --red: #ff453a;
 }
 
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-    user-select: none; /* Impede seleção de texto ao clicar rápido */
+    user-select: none;
 }
 
 body {
@@ -28,16 +28,16 @@ body {
     height: 100%;
 }
 
-/* --- Área do Cookie --- */
+/* --- Área do Gato --- */
 .bakery-section {
     flex: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background: radial-gradient(circle at center, #2c2c2e 0%, #000000 100%);
+    background: radial-gradient(circle at center, #332b30 0%, #1a1518 100%);
     position: relative;
-    border-right: 2px solid #000;
+    border-right: 2px solid #111;
 }
 
 .stats-header {
@@ -50,38 +50,40 @@ h1 {
     font-family: 'Fredoka One', cursive;
     font-size: 3rem;
     color: var(--accent-color);
-    text-shadow: 0 0 10px rgba(255, 159, 28, 0.5);
+    text-shadow: 0 0 10px rgba(255, 204, 0, 0.4);
 }
 
-.cookie-container {
+.clicker-container {
     position: relative;
     cursor: pointer;
     transition: transform 0.1s;
 }
 
-.cookie {
-    font-size: 15rem;
-    filter: drop-shadow(0 0 20px rgba(0,0,0,0.5));
+.cat-clicker {
+    font-size: 13rem; /* Tamanho do Gato */
+    filter: drop-shadow(0 0 25px rgba(0,0,0,0.6));
     transition: transform 0.05s;
+    line-height: 1;
 }
 
-.cookie:active {
-    transform: scale(0.95);
+.cat-clicker:active {
+    transform: scale(0.90) rotate(-5deg); /* Gato abaixa a cabeça ao clicar */
 }
 
 /* Efeito de partícula (+1) */
 .floating-number {
     position: absolute;
-    color: white;
+    color: var(--accent-color);
     font-weight: bold;
-    font-size: 1.5rem;
+    font-size: 1.8rem;
     pointer-events: none;
     animation: floatUp 1s ease-out forwards;
+    text-shadow: 1px 1px 0 #000;
 }
 
 @keyframes floatUp {
-    0% { opacity: 1; transform: translateY(0); }
-    100% { opacity: 0; transform: translateY(-50px); }
+    0% { opacity: 1; transform: translateY(0) scale(1); }
+    100% { opacity: 0; transform: translateY(-80px) scale(1.2); }
 }
 
 /* --- Área da Loja --- */
@@ -99,6 +101,7 @@ h1 {
     margin-bottom: 1rem;
     border-bottom: 1px solid #555;
     padding-bottom: 0.5rem;
+    color: var(--accent-color);
 }
 
 #store-container {
@@ -107,7 +110,6 @@ h1 {
     padding-right: 5px;
 }
 
-/* Scrollbar personalizada */
 #store-container::-webkit-scrollbar { width: 8px; }
 #store-container::-webkit-scrollbar-thumb { background: #555; border-radius: 4px; }
 
@@ -125,41 +127,44 @@ h1 {
 }
 
 .upgrade-item:hover {
-    background-color: #48484a;
+    background-color: #5c4a56;
+    transform: translateX(-2px);
 }
 
 .upgrade-item.disabled {
     opacity: 0.5;
     cursor: not-allowed;
-    filter: grayscale(1);
+    filter: grayscale(0.8);
 }
 
 .upgrade-info h3 { font-size: 1.1rem; margin-bottom: 2px; }
 .upgrade-info p { font-size: 0.9rem; color: #aaa; }
 .upgrade-cost { font-weight: bold; color: var(--green); }
-.upgrade-count { font-size: 1.5rem; font-weight: bold; color: #666; }
+.upgrade-count { font-size: 1.5rem; font-weight: bold; color: rgba(255,255,255,0.2); }
 
-/* Controles extras */
+/* Controles */
 .controls { margin-top: 2rem; display: flex; gap: 10px; }
 .util-btn {
     background: transparent;
-    border: 1px solid #666;
-    color: #fff;
-    padding: 5px 15px;
+    border: 1px solid #777;
+    color: #ccc;
+    padding: 8px 20px;
     cursor: pointer;
-    border-radius: 4px;
+    border-radius: 20px;
+    font-weight: bold;
 }
-.util-btn:hover { background: #444; }
+.util-btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
 .util-btn.danger:hover { background: var(--red); border-color: var(--red); }
 
 #message-log {
-    margin-top: 10px;
-    font-size: 0.8rem;
-    color: #888;
+    margin-top: 15px;
+    font-size: 0.9rem;
+    color: #999;
     height: 20px;
+    font-style: italic;
 }
 
-/* Responsividade Mobile */
+/* Mobile */
 @media (max-width: 768px) {
     .game-container { flex-direction: column; overflow-y: scroll; }
     .store-section { width: 100%; height: auto; }
