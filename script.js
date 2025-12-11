@@ -1,25 +1,26 @@
 // --- Configuração Inicial ---
 const gameState = {
-    cookies: 0,
-    totalCookiesBaked: 0,
-    cps: 0, // Cookies Por Segundo
+    score: 0, // Agora representa "Ronrons"
+    totalScoreAccumulated: 0,
+    cps: 0, // Ronrons Por Segundo
     clickValue: 1,
+    // AQUI ESTÁ A MÁGICA: Itens de Gato!
     buildings: [
-        { id: 0, name: "Cursor", baseCost: 15, cps: 0.1, count: 0, icon: "👆" },
-        { id: 1, name: "Vovó", baseCost: 100, cps: 1, count: 0, icon: "👵" },
-        { id: 2, name: "Fazenda", baseCost: 1100, cps: 8, count: 0, icon: "🚜" },
-        { id: 3, name: "Mina", baseCost: 12000, cps: 47, count: 0, icon: "⛏️" },
-        { id: 4, name: "Fábrica", baseCost: 130000, cps: 260, count: 0, icon: "🏭" },
-        { id: 5, name: "Banco", baseCost: 1400000, cps: 1400, count: 0, icon: "🏦" },
-        { id: 6, name: "Templo", baseCost: 20000000, cps: 7800, count: 0, icon: "🏛️" }
+        { id: 0, name: "Petisco", baseCost: 15, cps: 0.1, count: 0, icon: "🐟" },
+        { id: 1, name: "Caixa de Papelão", baseCost: 100, cps: 1, count: 0, icon: "📦" },
+        { id: 2, name: "Arranhador", baseCost: 1100, cps: 8, count: 0, icon: "🧶" },
+        { id: 3, name: "Catnip (Erva)", baseCost: 12000, cps: 47, count: 0, icon: "🌿" },
+        { id: 4, name: "Fábrica de Sachê", baseCost: 130000, cps: 260, count: 0, icon: "🏭" },
+        { id: 5, name: "Santuário Felino", baseCost: 1400000, cps: 1400, count: 0, icon: "⛩️" },
+        { id: 6, name: "Planeta dos Gatos", baseCost: 20000000, cps: 7800, count: 0, icon: "🪐" }
     ]
 };
 
 // --- Elementos do DOM ---
 const elements = {
-    cookieDisplay: document.getElementById('cookie-display'),
+    scoreDisplay: document.getElementById('score-display'),
     cpsDisplay: document.getElementById('cps-display'),
-    bigCookie: document.getElementById('big-cookie'),
+    bigCat: document.getElementById('big-cat'),
     storeContainer: document.getElementById('store-container'),
     msgLog: document.getElementById('message-log'),
     saveBtn: document.getElementById('save-btn'),
@@ -33,53 +34,47 @@ function init() {
     loadGame();
     renderStore();
     
-    // Loop de Jogo (Atualiza lógica e UI)
-    setInterval(gameLoop, 100); // Roda 10x por segundo para suavidade
-    setInterval(saveGame, 30000); // Auto-save a cada 30s
+    // Loops
+    setInterval(gameLoop, 100); 
+    setInterval(saveGame, 30000); 
     
-    // Event Listeners
-    elements.bigCookie.addEventListener('click', handleCookieClick);
-    elements.saveBtn.addEventListener('click', () => { saveGame(); showMessage("Jogo Salvo!"); });
+    // Eventos
+    elements.bigCat.addEventListener('click', handleCatClick);
+    elements.saveBtn.addEventListener('click', () => { saveGame(); showMessage("Progresso salvo! Miau!"); });
     elements.resetBtn.addEventListener('click', resetGame);
 }
 
-// Clique no Cookie
-function handleCookieClick(e) {
-    addCookies(gameState.clickValue);
-    createParticles(e.clientX, e.clientY, `+${formatNumber(gameState.clickValue)}`);
-    // Animação CSS extra via JS se necessário, mas o CSS :active já resolve bem
+function handleCatClick(e) {
+    addScore(gameState.clickValue);
+    // Efeito visual com corações ou "miau"
+    const randomText = Math.random() > 0.7 ? "Miau!" : `+${formatNumber(gameState.clickValue)}`;
+    createParticles(e.clientX, e.clientY, randomText);
 }
 
-// Loop Principal
 function gameLoop() {
-    // Adiciona Cookies baseados no CPS
-    // Se rodamos a cada 100ms, adicionamos CPS / 10
     if (gameState.cps > 0) {
-        const cookiesEarned = gameState.cps / 10;
-        addCookies(cookiesEarned);
+        const earned = gameState.cps / 10;
+        addScore(earned);
     }
     updateUI();
 }
 
-function addCookies(amount) {
-    gameState.cookies += amount;
-    gameState.totalCookiesBaked += amount;
+function addScore(amount) {
+    gameState.score += amount;
+    gameState.totalScoreAccumulated += amount;
 }
 
-// Atualiza Toda a Interface
 function updateUI() {
-    elements.cookieDisplay.textContent = `${formatNumber(Math.floor(gameState.cookies))} Cookies`;
+    elements.scoreDisplay.textContent = `${formatNumber(Math.floor(gameState.score))} Ronrons`;
     elements.cpsDisplay.textContent = `por segundo: ${formatNumber(gameState.cps.toFixed(1))}`;
     
-    // Atualiza o Título da Aba
-    elements.title.textContent = `${formatNumber(Math.floor(gameState.cookies))} Cookies - Mestre`;
+    elements.title.textContent = `${formatNumber(Math.floor(gameState.score))} Ronrons - Gatos`;
 
-    // Verifica botões da loja (Habilita/Desabilita visualmente)
     gameState.buildings.forEach(building => {
         const btn = document.getElementById(`btn-building-${building.id}`);
         const cost = getBuildingCost(building);
         
-        if (gameState.cookies >= cost) {
+        if (gameState.score >= cost) {
             btn.classList.remove('disabled');
         } else {
             btn.classList.add('disabled');
@@ -87,10 +82,9 @@ function updateUI() {
     });
 }
 
-// --- Lógica da Loja ---
+// --- Loja ---
 
 function getBuildingCost(building) {
-    // Fórmula clássica: CustoBase * (1.15 ^ Quantidade)
     return Math.floor(building.baseCost * Math.pow(1.15, building.count));
 }
 
@@ -101,7 +95,7 @@ function renderStore() {
         const cost = getBuildingCost(building);
         
         const item = document.createElement('div');
-        item.className = 'upgrade-item disabled'; // Começa desabilitado até updateUI rodar
+        item.className = 'upgrade-item disabled';
         item.id = `btn-building-${building.id}`;
         item.onclick = () => buyBuilding(building.id);
         
@@ -109,7 +103,7 @@ function renderStore() {
             <div class="upgrade-icon" style="font-size: 2rem; margin-right: 10px;">${building.icon}</div>
             <div class="upgrade-info" style="flex: 1;">
                 <h3>${building.name}</h3>
-                <p class="upgrade-cost">🍪 ${formatNumber(cost)}</p>
+                <p class="upgrade-cost">🧶 ${formatNumber(cost)}</p>
                 <p>+${formatNumber(building.cps)} CPS</p>
             </div>
             <div class="upgrade-count" id="count-building-${building.id}">${building.count}</div>
@@ -123,18 +117,19 @@ function buyBuilding(id) {
     const building = gameState.buildings.find(b => b.id === id);
     const cost = getBuildingCost(building);
 
-    if (gameState.cookies >= cost) {
-        gameState.cookies -= cost;
+    if (gameState.score >= cost) {
+        gameState.score -= cost;
         building.count++;
         recalculateCPS();
         
-        // Atualiza visual da loja apenas para esse item
         const countDisplay = document.getElementById(`count-building-${building.id}`);
         countDisplay.textContent = building.count;
         
-        // Atualiza o preço no DOM
-        renderStore(); // Re-renderiza para atualizar preços (poderia ser otimizado, mas funciona bem)
-        showMessage(`Comprou ${building.name}!`);
+        renderStore();
+        
+        // Mensagens temáticas
+        const msgs = ["Boa escolha!", "Os gatos amaram!", "Mais ronrons!", "Purr purr..."];
+        showMessage(`${building.name} comprado! ${msgs[Math.floor(Math.random()*msgs.length)]}`);
     }
 }
 
@@ -146,24 +141,20 @@ function recalculateCPS() {
     gameState.cps = cps;
 }
 
-// --- Efeitos Visuais ---
+// --- Efeitos ---
 
 function createParticles(x, y, text) {
     const particle = document.createElement('div');
     particle.className = 'floating-number';
     particle.textContent = text;
     
-    // Pequena variação aleatória na posição
     const randomX = (Math.random() - 0.5) * 40;
     particle.style.left = `${x + randomX}px`;
     particle.style.top = `${y - 20}px`;
     
     document.body.appendChild(particle);
     
-    // Remove do DOM após a animação (1s)
-    setTimeout(() => {
-        particle.remove();
-    }, 1000);
+    setTimeout(() => { particle.remove(); }, 1000);
 }
 
 function showMessage(msg) {
@@ -180,21 +171,19 @@ function formatNumber(num) {
     return num;
 }
 
-// --- Save / Load System ---
+// --- Save/Load (Atualizado para chave 'catClickerSave') ---
 
 function saveGame() {
-    localStorage.setItem('cookieClickerSave', JSON.stringify(gameState));
+    localStorage.setItem('catClickerSave', JSON.stringify(gameState));
 }
 
 function loadGame() {
-    const saved = localStorage.getItem('cookieClickerSave');
+    const saved = localStorage.getItem('catClickerSave');
     if (saved) {
         const parsed = JSON.parse(saved);
-        // Precisamos mesclar para evitar erros se mudarmos a estrutura do objeto no futuro
-        gameState.cookies = parsed.cookies;
-        gameState.totalCookiesBaked = parsed.totalCookiesBaked || 0;
+        gameState.score = parsed.score || 0;
+        gameState.totalScoreAccumulated = parsed.totalScoreAccumulated || 0;
         
-        // Recupera contagem de prédios
         parsed.buildings.forEach((savedB, index) => {
             if (gameState.buildings[index]) {
                 gameState.buildings[index].count = savedB.count;
@@ -205,11 +194,10 @@ function loadGame() {
 }
 
 function resetGame() {
-    if(confirm("Tem certeza que quer perder todo o progresso?")) {
-        localStorage.removeItem('cookieClickerSave');
+    if(confirm("Quer mesmo abandonar seus gatos? (O progresso será perdido)")) {
+        localStorage.removeItem('catClickerSave');
         location.reload();
     }
 }
 
-// Iniciar
 init();
